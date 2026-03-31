@@ -113,7 +113,7 @@ export default function RaceBarChart() {
           <LabelList
             dataKey="ms"
             position="right"
-            formatter={(v: number) => (v > 0 ? fmtMs(v) : '')}
+            formatter={(v: unknown) => (typeof v === 'number' && v > 0 ? fmtMs(v) : '')}
             style={{
               fill: 'oklch(0.75 0.01 260)',
               fontSize: 12,
