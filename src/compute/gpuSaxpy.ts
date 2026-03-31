@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { BenchmarkResult } from './types';
-import saxpyWgsl from '../wgsl/saxpy.wgsl';
+import saxpyWgsl from '../wgsl/saxpy.wgsl?raw';
 
 let cachedPipeline: GPUComputePipeline | null = null;
 let pipelineDevice: GPUDevice | null = null;

@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { BenchmarkResult } from './types';
-import matmulWgsl from '../wgsl/matmul.wgsl';
+import matmulWgsl from '../wgsl/matmul.wgsl?raw';
 
 // Cache the compiled pipeline so repeated runs don't pay shader compilation cost
 let cachedPipeline: GPUComputePipeline | null = null;

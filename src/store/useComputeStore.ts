@@ -9,6 +9,8 @@ import { resolveParams } from '@/compute/types';
 import { initGPU } from '@/compute/gpuContext';
 import { gpuMatmul } from '@/compute/gpuMatmul';
 import { gpuSaxpy } from '@/compute/gpuSaxpy';
+import MatmulWorker from '../workers/cpuMatmul.worker?worker';
+import SaxpyWorker from '../workers/cpuSaxpy.worker?worker';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -50,16 +52,15 @@ function clampHistory(history: RunResult[]): RunResult[] {
 }
 
 /**
- * Wraps a Web Worker call in a Promise.
+ * Wraps a Web Worker instance in a Promise.
  * Dispatches { progress } messages to onProgress, then resolves with durationMs.
  */
 function runWorker(
-  workerUrl: URL,
+  worker: Worker,
   message: Record<string, unknown>,
   onProgress: (p: number) => void,
 ): Promise<number> {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(workerUrl, { type: 'module' });
 
     const timeoutId = window.setTimeout(() => {
       worker.terminate();
@@ -135,10 +136,10 @@ export const useComputeStore = create<ComputeState>((set, get) => ({
     try {
       const param = resolveParams(activeOp, complexity);
 
+      const worker = activeOp === 'matmul' ? new MatmulWorker() : new SaxpyWorker();
+
       const durationMs = await runWorker(
-        activeOp === 'matmul'
-          ? new URL('../workers/cpuMatmul.worker.ts', import.meta.url)
-          : new URL('../workers/cpuSaxpy.worker.ts', import.meta.url),
+        worker,
         activeOp === 'matmul' ? { n: param } : { length: param },
         (p) => set({ cpuProgress: p }),
       );
